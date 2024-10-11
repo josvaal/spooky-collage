@@ -26,7 +26,7 @@
 
 ### 🧛 **Dynamic Horror Effects**
 
-- **Cloudinary** adds a unique touch of horror to each image with **distortion effects**—glitches, eerie shadows, and dark filters that craft a chilling atmosphere. 😈
+- **Cloudinary** adds a unique touch of horror to each image with **SpOOooOOooky** filters that craft a chilling atmosphere. 😈
 
 
 ---
