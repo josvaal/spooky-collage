@@ -15,7 +15,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        fs: require.resolve("browserify-fs")
+        fs: "browserify-fs"
       }
     }
   },
