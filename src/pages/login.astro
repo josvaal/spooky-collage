@@ -34,6 +34,17 @@ if (userData) {
   // The auth logic is executed on the client,
   // tokens are copied in cookies, which are then accessed on the server
 
+  const getURL = () => {
+    let url =
+      import.meta.env.PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+      "http://localhost:3000/";
+    // Make sure to include `https://` when not localhost.
+    url = url.startsWith("http") ? url : `https://${url}`;
+    // Make sure to include a trailing `/`.
+    url = url.endsWith("/") ? url : `${url}/`;
+    return url;
+  };
+
   const submitBtn = document.querySelector("#submit-btn");
   submitBtn!.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -42,6 +53,9 @@ if (userData) {
       submitBtn!.textContent = "Loading";
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
+        options: {
+          redirectTo: getURL(),
+        },
       });
       if (error) throw error;
       alert("Éxito!");
