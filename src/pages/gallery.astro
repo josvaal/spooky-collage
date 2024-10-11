@@ -1,0 +1,137 @@
+---
+import Heading from "fulldev-ui/components/Heading.astro";
+import Layout from "../components/layout.astro";
+import Nav from "../components/nav.astro";
+import {
+    accessTokenName,
+    refreshTokenName,
+    cloudinaryApiKey,
+    cloudinaryApiSecret,
+} from "../utils/config";
+import { getUser } from "../utils/supabaseServer";
+import { getCldImageUrl } from "astro-cloudinary/helpers";
+import { CldUploadWidget } from "astro-cloudinary";
+import Button from "fulldev-ui/components/Button.astro";
+import Grid from "fulldev-ui/components/Grid.astro";
+import Section from "fulldev-ui/components/Section.astro";
+
+export const cloudName = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
+const accessToken = Astro.cookies.get(accessTokenName)?.value;
+const refreshToken = Astro.cookies.get(refreshTokenName)?.value;
+
+const userData = await getUser({ accessToken, refreshToken });
+
+// the profile page is private
+if (!userData) {
+    return Astro.redirect("/login");
+}
+
+let url = getCldImageUrl({
+    src: `gallery/${userData.id}`,
+});
+// console.log(url);
+
+async function verifyUrl(imageUrl: string | URL | Request) {
+    try {
+        const response = await fetch(imageUrl);
+        // console.log(response);
+        // Verificamos el código de estado
+        if (response.ok) {
+            console.log("URL válida:", imageUrl);
+            return false;
+        } else if (response.status === 404) {
+            console.log("Imagen no encontrada. URL inválida:", imageUrl);
+            return true;
+        } else {
+            console.log("Error al verificar la URL:", response.status);
+            return true;
+        }
+    } catch (error) {
+        console.error("Error al intentar acceder a la URL:", error);
+        return true;
+    }
+}
+
+// Llamamos a la función para verificar la URL
+const uploadArt = await verifyUrl(url);
+
+interface CloudinaryImage {
+    public_id: string;
+    url: string;
+    // Add other properties as needed
+}
+
+async function fetchImagesFromCloudinary(): Promise<CloudinaryImage[]> {
+    const url: string = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload?prefix=gallery/`;
+
+    const response: Response = await fetch(url, {
+        method: "GET",
+        headers: {
+            Authorization: `Basic ${btoa(`${cloudinaryApiKey}:${cloudinaryApiSecret}`)}`,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch images from Cloudinary");
+    }
+
+    const data: { resources: CloudinaryImage[] } = await response.json();
+
+    const images: CloudinaryImage[] = data.resources.map((image) => ({
+        public_id: image.public_id,
+        url: getCldImageUrl({
+            src: image.public_id, // Use the public ID from Cloudinary
+            crop: {
+                type: "fill",
+                source: true,
+            },
+            replaceBackground: "pumpkins and ghosts",
+        }), // Construct URL using public_id
+    }));
+
+    return images;
+}
+
+const images = await fetchImagesFromCloudinary();
+console.log(images);
+---
+
+<Layout title="Gallery" isLoggedIn={true}>
+    <Nav activeUrl="profile" isLoggedIn={true} />
+
+    <Heading color="brand" contrast={false}>Collage Gallery</Heading>
+    <br />
+    {
+        uploadArt ? (
+            <CldUploadWidget
+                uploadPreset="ml_default"
+                options={{
+                    sources: ["local", "camera", "google_drive"],
+                    multiple: false,
+                    maxFiles: 1,
+                    publicId: `gallery/${userData.id}`,
+                }}
+            >
+                <button style="background-color: rgba(0, 0, 0, 0); border: none;">
+                    <Button color="brand">Upload my art</Button>
+                </button>
+            </CldUploadWidget>
+        ) : (
+            ""
+        )
+    }
+    <br />
+    <Section>
+        <Grid>
+            {
+                images.map((image) => (
+                    <img
+                        style="max-width: 400px;"
+                        src={image.url}
+                        alt={image.public_id}
+                    />
+                ))
+            }
+        </Grid>
+    </Section>
+</Layout>

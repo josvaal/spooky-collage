@@ -1,0 +1,64 @@
+---
+import Button from "fulldev-ui/components/Button.astro";
+import Link from "fulldev-ui/components/Link.astro";
+
+interface Props {
+    activeUrl: string;
+    isLoggedIn: boolean;
+}
+
+const { activeUrl, isLoggedIn } = Astro.props;
+const pages = isLoggedIn ? ["home", "profile", "gallery"] : ["home", "login"];
+---
+
+<nav>
+    {
+        pages.map((route) => (
+            <Link
+                color="brand"
+                class:list={[{ active: activeUrl === route }]}
+                href={`/${route === "home" ? "" : route}`}
+            >
+                {route.toUpperCase()}
+            </Link>
+        ))
+    }
+    {
+        isLoggedIn && (
+            <Button class="logout-action" color="brand">
+                Logout
+            </Button>
+        )
+    }
+</nav>
+<style>
+    nav {
+        margin: auto;
+        padding: 1rem;
+        width: 800px;
+        font-size: 20px;
+        line-height: 1.6;
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 4rem;
+        border-radius: 0.5rem;
+        border: 3px dotted #ffdfcf;
+        box-sizing: border-box;
+    }
+    .logout-action {
+        margin-left: auto;
+        border-radius: 0.5rem;
+    }
+</style>
+
+<script>
+    import { supabase } from "../utils/supabaseBrowser";
+    // we add the logout logic here
+
+    const logoutAction = document.querySelector(".logout-action");
+    if (logoutAction) {
+        logoutAction.addEventListener("click", () => {
+            supabase.auth.signOut();
+        });
+    }
+</script>

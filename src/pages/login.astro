@@ -1,0 +1,70 @@
+---
+import Layout from "../components/layout.astro";
+import Nav from "../components/nav.astro";
+import Button from "fulldev-ui/components/Button.astro";
+import { Icon } from "astro-icon/components";
+import { accessTokenName, refreshTokenName } from "../utils/config";
+import { getUser } from "../utils/supabaseServer";
+
+const accessToken = Astro.cookies.get(accessTokenName)?.value;
+const refreshToken = Astro.cookies.get(refreshTokenName)?.value;
+
+// in case the user is already logged in we redirect to profile page
+const userData = await getUser({ accessToken, refreshToken });
+if (userData) {
+  return Astro.redirect("/");
+}
+---
+
+<Layout title="login" isLoggedIn={false}>
+  <Nav activeUrl="login" isLoggedIn={false} />
+  <form class="form-widget">
+    <Button type="submit" aria-live="polite" color="brand" id="submit-btn">
+      <div id="auth-btn">
+        <Icon name="github" size="20" />
+        <span>Login with GitHub</span>
+      </div>
+    </Button>
+  </form>
+</Layout>
+
+<script>
+  import { supabase } from "../utils/supabaseBrowser";
+
+  // The auth logic is executed on the client,
+  // tokens are copied in cookies, which are then accessed on the server
+
+  const submitBtn = document.querySelector("#submit-btn");
+  submitBtn!.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    try {
+      submitBtn!.textContent = "Loading";
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+      });
+      if (error) throw error;
+      alert("Éxito!");
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    } finally {
+      submitBtn!.textContent = "Login with GitHub";
+    }
+  });
+</script>
+
+<style>
+  form {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  #auth-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+</style>

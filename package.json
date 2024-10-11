@@ -1,0 +1,23 @@
+{
+  "name": "cloudinary-spooky-hackaton",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev --port 3000",
+    "start": "npm run dev",
+    "build": "astro build",
+    "preview": "astro preview --port 3000",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^8.3.3",
+    "@supabase/supabase-js": "^2.45.3",
+    "astro": "^4.15.1",
+    "astro-cloudinary": "^1.1.0",
+    "astro-icon": "^1.1.1",
+    "fulldev-ui": "^0.4.28",
+    "nanostores": "^0.11.3",
+    "node:latest": "link:@astrojs/node:latest",
+    "two-up-element": "^1.0.1"
+  }
+}
