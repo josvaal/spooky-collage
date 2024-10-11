@@ -1,4 +1,6 @@
 ---
+import Link from "fulldev-ui/components/Link.astro";
+
 interface Props {
     title: string;
     isLoggedIn: boolean;
@@ -21,6 +23,13 @@ const { title, isLoggedIn } = Astro.props;
         <main>
             <slot />
         </main>
+        <br />
+        <footer>
+            <span>Developed by: </span>
+            <Link>Josval</Link>
+        </footer>
+        <br />
+        <br />
     </body>
 </html>
 
@@ -47,6 +56,14 @@ const { title, isLoggedIn } = Astro.props;
     a:-webkit-any-link {
         text-decoration: none;
         color: rgb(224, 102, 250);
+    }
+    footer {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+    footer a {
+        font-size: 1.5rem;
+        font-weight: bold;
     }
 </style>
 <script>
