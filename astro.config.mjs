@@ -4,6 +4,7 @@ import node from '@astrojs/node';
 import fulldev from 'fulldev-ui/integration'
 
 import icon from 'astro-icon';
+import { resolve } from 'path';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +12,13 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
+  vite: {
+    resolve: {
+      alias: {
+        fs: require.resolve("browserify-fs")
+      }
+    }
+  },
   integrations: [fulldev({
     colors: {
       theme: 'dark',
