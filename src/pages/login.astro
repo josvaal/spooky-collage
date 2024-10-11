@@ -35,10 +35,8 @@ if (userData) {
   // tokens are copied in cookies, which are then accessed on the server
 
   const getURL = () => {
-    let url =
-      import.meta.env.PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-      "http://localhost:3000/";
-    // Make sure to include `https://` when not localhost.
+    console.log(import.meta.env.PUBLIC_VERCEL_URL);
+    let url = import.meta.env.PUBLIC_VERCEL_URL;
     url = url.startsWith("http") ? url : `https://${url}`;
     // Make sure to include a trailing `/`.
     url = url.endsWith("/") ? url : `${url}/`;
