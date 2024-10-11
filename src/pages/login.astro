@@ -34,15 +34,6 @@ if (userData) {
   // The auth logic is executed on the client,
   // tokens are copied in cookies, which are then accessed on the server
 
-  const getURL = () => {
-    console.log(import.meta.env.PUBLIC_VERCEL_URL);
-    let url = import.meta.env.PUBLIC_VERCEL_URL;
-    url = url.startsWith("http") ? url : `https://${url}`;
-    // Make sure to include a trailing `/`.
-    url = url.endsWith("/") ? url : `${url}/`;
-    return url;
-  };
-
   const submitBtn = document.querySelector("#submit-btn");
   submitBtn!.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -52,7 +43,7 @@ if (userData) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
-          redirectTo: getURL(),
+          redirectTo: window.location.origin,
         },
       });
       if (error) throw error;
